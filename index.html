@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dynamic Bar Chart</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      position: relative;
+    }
+    .container {
+      text-align: center;
+    }
+    .bars {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      height: 300px;
+      width: 200px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      background-color: #fff;
+    }
+    .bar {
+      width: 50px;
+      margin: 0 10px;
+      transition: height 0.5s ease;
+    }
+    .bar.pink {
+      background-color: rgb(255, 22, 201);
+    }
+    .bar.green {
+      background-color: rgb(33, 222, 33);
+    }
+    button {
+      display: block;
+      margin: 10px auto;
+      padding: 10px;
+      width: 100px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:disabled {
+      background-color: #ddd;
+      cursor: not-allowed;
+    }
+    .counter {
+      margin-top: 10px;
+      font-size: 18px;
+    }
+    .reset-button {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: red;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="bars">
+      <div id="pinkBar" class="bar pink" style="height: 0;"></div>
+      <div id="greenBar" class="bar green" style="height: 0;"></div>
+    </div>
+    <button id="pinkButton">Pink + 1</button>
+    <button id="greenButton">Green + 1</button>
+    <div class="counter">
+      Pink Team Score: <span id="pinkCounter">0</span><br>
+      Green Team Score: <span id="greenCounter">0</span>
+    </div>
+  </div>
+  
+  <!-- Reset Button -->
+  <button class="reset-button" id="resetButton">Reset</button>
+
+  <script>
+    let pinkScore = 0;
+    let greenScore = 0;
+    let pinkButton = document.getElementById('pinkButton');
+    let greenButton = document.getElementById('greenButton');
+    let pinkBar = document.getElementById('pinkBar');
+    let greenBar = document.getElementById('greenBar');
+    let pinkCounter = document.getElementById('pinkCounter');
+    let greenCounter = document.getElementById('greenCounter');
+    let resetButton = document.getElementById('resetButton');
+
+    function updateBars() {
+      // Find the maximum score
+      let maxScore = Math.max(pinkScore, greenScore);
+      
+      // Calculate the height percentages based on the maximum score
+      let pinkHeight = maxScore === 0 ? 0 : (pinkScore / maxScore) * 100;
+      let greenHeight = maxScore === 0 ? 0 : (greenScore / maxScore) * 100;
+      
+      // Set the heights of the bars
+      pinkBar.style.height = pinkHeight + '%';
+      greenBar.style.height = greenHeight + '%';
+
+      // Update the counters
+      pinkCounter.textContent = pinkScore;
+      greenCounter.textContent = greenScore;
+    }
+
+    function handleButtonClick(color) {
+      if (color === 'pink') {
+        pinkScore++;
+      } else if (color === 'green') {
+        greenScore++;
+      }
+
+      // Disable the clicked button and start the countdown
+      let button = color === 'pink' ? pinkButton : greenButton;
+      button.disabled = true;
+      let countdown = 30;
+      let countdownInterval = setInterval(() => {
+        button.textContent = countdown;
+        countdown--;
+        if (countdown < 0) {
+          clearInterval(countdownInterval);
+          button.textContent = color.charAt(0).toUpperCase() + color.slice(1) + ' + 1';
+          button.disabled = false;
+        }
+      }, 1000);
+
+      // Update the bars based on the new scores
+      updateBars();
+    }
+
+    // Reset the scores and bars
+    function resetScores() {
+      pinkScore = 0;
+      greenScore = 0;
+      updateBars();
+    }
+
+    pinkButton.addEventListener('click', () => handleButtonClick('pink'));
+    greenButton.addEventListener('click', () => handleButtonClick('green'));
+    resetButton.addEventListener('click', resetScores);
+
+    // Initialize the bars
+    updateBars();
+  </script>
+</body>
+</html>
